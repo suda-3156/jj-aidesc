@@ -76,8 +76,8 @@ class JJClient:
         return commits
 
     def get_diff(self, revision: str) -> str:
-        """Get diff for a revision."""
-        return self._run("diff", "-r", revision)
+        """Get diff for a revision in git format."""
+        return self._run("diff", "--git", "-r", revision)
 
     def get_diff_summary(self, revision: str) -> str:
         """Get diff summary for a revision."""
