@@ -46,7 +46,8 @@ console = Console(highlight=False)
 )
 @click.option(
     "--config",
-    "-c" "config_path",
+    "-c",
+    "config_path",
     type=click.Path(exists=True, dir_okay=False),
     help="Path to configuration file",
 )
