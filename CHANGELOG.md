@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/suda-3156/jj-aidesc/compare/v0.1.0...v0.1.1) (2025-12-03)
+
+
+### Bug Fixes
+
+* **readme:** correct the repository URL in the installation guide ([b007d9d](https://github.com/suda-3156/jj-aidesc/commit/b007d9dbd48e9ce577a0d245017e2862930f938e))
+
 ## 0.1.0 (2025-12-03)
 
 
