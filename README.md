@@ -228,6 +228,65 @@ jj-aidesc -r '@-::@'
 jj-aidesc --style follow
 ```
 
+### Revset Expressions (`--revisions`)
+
+The `--revisions` option uses jj's [revset language](https://martinvonz.github.io/jj/latest/revsets/) to specify which commits to target. Default is `mutable()`.
+
+#### Common Revset Patterns
+
+| Revset       | Description                               |
+| ------------ | ----------------------------------------- |
+| `mutable()`  | All mutable (editable) commits (default)  |
+| `@`          | Current working copy commit               |
+| `@-`         | Parent of current commit                  |
+| `@--`        | Grandparent of current commit             |
+| `trunk()..@` | Commits from trunk to current (exclusive) |
+| `@-::@`      | Parent to current (inclusive range)       |
+| `abc123`     | Specific commit by change ID              |
+| `branches()` | All branch heads                          |
+| `mine()`     | Commits authored by you                   |
+
+#### Revset Operators
+
+| Operator | Description                     | Example              |
+| -------- | ------------------------------- | -------------------- |
+| `x & y`  | Intersection (both conditions)  | `mutable() & mine()` |
+| `x \| y` | Union (either condition)        | `@- \| @`            |
+| `~x`     | Negation (not matching)         | `~empty()`           |
+| `x::y`   | Range from x to y (inclusive)   | `trunk()::@`         |
+| `x..y`   | Range from x to y (x exclusive) | `trunk()..@`         |
+| `x-`     | Parents of x                    | `@-`                 |
+| `x+`     | Children of x                   | `trunk()+`           |
+
+#### Practical Examples
+
+```bash
+# Process only the current commit
+jj-aidesc -r '@'
+
+# Process last 3 commits
+jj-aidesc -r '@---::@'
+
+# Process commits since branching from trunk
+jj-aidesc -r 'trunk()..@'
+
+# Process only your commits in mutable range
+jj-aidesc -r 'mutable() & mine()'
+
+# Process a specific commit by change ID
+jj-aidesc -r 'kkmpvwqx'
+
+# Process all commits except working copy
+jj-aidesc -r 'mutable() & ~@'
+```
+
+> **Note**: `jj-aidesc` automatically filters the revset to only include commits that:
+>
+> - Have no description (`description(exact:"")`)
+> - Have changes (not `empty()`)
+>
+> So you don't need to specify these conditions manually.
+
 ## Config File
 
 You can specify default settings in `.jj-aidesc.yaml` (searches current directory or repository root):

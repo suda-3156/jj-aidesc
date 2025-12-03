@@ -336,7 +336,7 @@ def _prompt_action() -> str:
     console.print("  [dim]y: Apply / n: Skip / e: Edit / r: Regenerate / q: Quit[/dim]")
 
     while True:
-        console.print("Choose an action: ", end="")
+        console.print("Apply?: ", end="")
         key = readchar.readkey()
         console.print(key)
 
