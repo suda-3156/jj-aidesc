@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import click
-from readchar import readchar
+import readchar
 from rich.console import Console
 from rich.padding import Padding
 
