@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import click
+from readchar import readchar
 from rich.console import Console
 from rich.padding import Padding
 
@@ -335,17 +336,17 @@ def _prompt_action() -> str:
     console.print("  [dim]y: Apply / n: Skip / e: Edit / r: Regenerate / q: Quit[/dim]")
 
     while True:
-        try:
-            choice = click.prompt(
-                "  Apply?",
-                type=click.Choice(["y", "n", "e", "r", "q"], case_sensitive=False),
-                default="y",
-                show_choices=False,
-                show_default=False,
+        console.print("Choose an action: ", end="")
+        key = readchar.readkey()
+        console.print(key)
+
+        action = key.lower()
+        if action in ["y", "n", "e", "r", "q"]:
+            return action
+        else:
+            console.print(
+                f"[red]Invalid action: {key}. Please choose y, n, e, r, or q.[/red]"
             )
-            return choice.lower()
-        except click.Abort:
-            return "q"
 
 
 def _prompt_feedback() -> str:
