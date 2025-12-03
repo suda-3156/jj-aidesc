@@ -1,7 +1,8 @@
 import html
 
 from langchain_core.language_models import BaseChatModel
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from pydantic import BaseModel, Field
 
 from jj_aidesc.error import AIError
@@ -21,13 +22,22 @@ class AI:
         self.model = model
         self.system_prompt = system_prompt
         self.language = language
+        self.conversation_history: list[BaseMessage] = []
+
+    def reset_history(self) -> None:
+        self.conversation_history = []
 
     def generate(
         self,
         diff: str,
         existing_descriptions: list[str] | None = None,
+        feedback: str | None = None,
     ) -> str:
         try:
+            # Add feedback to history if provided (regeneration case)
+            if feedback:
+                self.conversation_history.append(HumanMessage(content=feedback))
+
             prompt_template = ChatPromptTemplate.from_messages(
                 [
                     self.system_prompt,
@@ -35,6 +45,7 @@ class AI:
                         "human",
                         "<diff>\n{diff}\n</diff>",
                     ),
+                    MessagesPlaceholder("history"),
                 ]
             )
 
@@ -47,8 +58,12 @@ class AI:
                         "\n\n".join(existing_descriptions or [])
                     ),
                     "language": self.language,
+                    "history": self.conversation_history,
                 }
             )  # type: ignore
+
+            # Add the AI response to history for potential future regeneration
+            self.conversation_history.append(AIMessage(content=result.message))
 
             return result.message
 

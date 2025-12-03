@@ -162,54 +162,40 @@ def main(
 
     # Generate descriptions
     applied_count = 0
+    quit_requested = False
     for i, commit in enumerate(commits, 1):
+        if quit_requested:
+            break
+
         console.print(f"[bold][{i}/{len(commits)}] {commit.change_id}[/bold]")
+
+        # Reset AI conversation history for each new commit
+        ai.reset_history()
 
         # Get diff
         with Spinner(text="  Getting diff...") as spinner:
             diff = jj.get_diff(commit.change_id)
             spinner.succeed("  Got diff")
 
-        # Generate description
-        with Spinner(text="  Generating description...") as spinner:
-            description = ai.generate(diff, existing_descriptions)
-            spinner.succeed("  Generated description")
+        # Generation loop (supports regeneration with feedback)
+        description = _generation_loop(
+            ai=ai,
+            diff=diff,
+            existing_descriptions=existing_descriptions,
+            jj=jj,
+            editor=editor,
+            commit=commit,
+            dry_run=dry_run,
+            apply=apply,
+            Spinner=Spinner,
+        )
 
-        # Display description
-        console.print("  ────────────────────────────────")
-        console.print(Padding(description, (0, 0, 0, 4)))
-        console.print("  ────────────────────────────────")
-
-        if dry_run:
-            console.print("  [dim](dry-run, not applied)[/dim]")
-            console.print()
-            continue
-
-        if apply:
-            # Apply without confirmation
-            jj.set_description(description, commit.change_id)
-            console.print("  [green]✓ Applied[/green]")
+        if description is None:
+            # Quit was requested
+            quit_requested = True
+            console.print("  [yellow]Quit[/yellow]")
+        elif description:
             applied_count += 1
-        else:
-            # Ask for confirmation
-            action = _prompt_action()
-            if action == "y":
-                jj.set_description(description, commit.change_id)
-                console.print("  [green]✓ Applied[/green]")
-                applied_count += 1
-            elif action == "e":
-                try:
-                    edited = editor.edit(description)
-                    jj.set_description(edited, commit.change_id)
-                    console.print("  [green]✓ Applied (edited)[/green]")
-                    applied_count += 1
-                except AbortError:
-                    console.print("  [yellow]Skipped[/yellow]")
-            elif action == "n":
-                console.print("  [yellow]Skipped[/yellow]")
-            elif action == "q":
-                console.print("  [yellow]Quit[/yellow]")
-                break
 
         console.print()
 
@@ -267,14 +253,91 @@ def _display_config(config: Config, provider) -> None:
     console.print()
 
 
+def _generation_loop(
+    ai: AI,
+    diff: str,
+    existing_descriptions: list[str] | None,
+    jj: JJClient,
+    editor: Editor,
+    commit,
+    dry_run: bool,
+    apply: bool,
+    Spinner,
+) -> bool | None:
+    """
+    Generate description with optional regeneration loop.
+
+    Returns:
+        True if description was applied
+        False if skipped
+        None if quit was requested
+    """
+    feedback: str | None = None
+
+    while True:
+        # Generate description
+        if feedback:
+            with Spinner(text="  Regenerating description...") as spinner:
+                description = ai.generate(
+                    diff, existing_descriptions, feedback=feedback
+                )
+                spinner.succeed("  Regenerated description")
+        else:
+            with Spinner(text="  Generating description...") as spinner:
+                description = ai.generate(diff, existing_descriptions)
+                spinner.succeed("  Generated description")
+
+        # Display description
+        console.print("  ────────────────────────────────")
+        console.print(Padding(description, (0, 0, 0, 4)))
+        console.print("  ────────────────────────────────")
+
+        if dry_run:
+            console.print("  [dim](dry-run, not applied)[/dim]")
+            return False
+
+        if apply:
+            # Apply without confirmation
+            jj.set_description(description, commit.change_id)
+            console.print("  [green]✓ Applied[/green]")
+            return True
+
+        # Ask for confirmation
+        action = _prompt_action()
+        if action == "y":
+            jj.set_description(description, commit.change_id)
+            console.print("  [green]✓ Applied[/green]")
+            return True
+        elif action == "e":
+            try:
+                edited = editor.edit(description)
+                jj.set_description(edited, commit.change_id)
+                console.print("  [green]✓ Applied (edited)[/green]")
+                return True
+            except AbortError:
+                console.print("  [yellow]Skipped[/yellow]")
+                return False
+        elif action == "r":
+            feedback = _prompt_feedback()
+            if not feedback:
+                console.print("  [yellow]Regeneration cancelled[/yellow]")
+                continue
+            # Loop will continue with regeneration
+        elif action == "n":
+            console.print("  [yellow]Skipped[/yellow]")
+            return False
+        elif action == "q":
+            return None
+
+
 def _prompt_action() -> str:
-    console.print("  [dim]y: Apply / n: Skip / e: Edit / q: Quit[/dim]")
+    console.print("  [dim]y: Apply / n: Skip / e: Edit / r: Regenerate / q: Quit[/dim]")
 
     while True:
         try:
             choice = click.prompt(
                 "  Apply?",
-                type=click.Choice(["y", "n", "e", "q"], case_sensitive=False),
+                type=click.Choice(["y", "n", "e", "r", "q"], case_sensitive=False),
                 default="y",
                 show_choices=False,
                 show_default=False,
@@ -282,6 +345,15 @@ def _prompt_action() -> str:
             return choice.lower()
         except click.Abort:
             return "q"
+
+
+def _prompt_feedback() -> str:
+    console.print("  [dim]Enter feedback for regeneration (or empty to cancel):[/dim]")
+    try:
+        feedback = click.prompt("  Feedback", default="", show_default=False)
+        return feedback.strip()
+    except click.Abort:
+        return ""
 
 
 if __name__ == "__main__":
