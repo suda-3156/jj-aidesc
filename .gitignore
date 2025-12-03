@@ -1,0 +1,30 @@
+.pytest_cache/
+__pycache__/
+.venv/
+.vscode/
+.ruff_cache/
+
+# env
+*.env*
+!.env.example
+!.env.test
+# secrets variables are written in .env* files, and .envrc is only used to load them
+!.envrc
+**/config.*.yml
+**/config.*.yaml
+# !**/config.local.yml
+!**/config.test.yml
+
+# work
+memo
+logs/
+temp/
+air_tmp
+dump-code*.*
+code-dump*.*
+!dump-code.py
+*.local.md
+
+# binary
+*.bin
+*.out

@@ -1,0 +1,101 @@
+# Reference:
+#   https://github.com/koki-develop/git-aicommit/blob/main/.github/workflows/ci.yml
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  UV_CACHE_DIR: /tmp/.uv-cache
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6.0.0
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@v3.5.0
+      - uses: actions/cache@v4.3.0
+        with:
+          path: ${{ env.UV_CACHE_DIR }}
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+            uv-${{ runner.os }}
+
+      - run: uv sync --locked --all-extras --dev
+      - run: uv build
+      - run: uv cache prune --ci
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6.0.0
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@v3.5.0
+      - uses: actions/cache@v4.3.0
+        with:
+          path: ${{ env.UV_CACHE_DIR }}
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+            uv-${{ runner.os }}
+
+      - run: uv sync --locked --all-extras --dev
+      - run: uv run ruff check
+      - run: uv cache prune --ci
+
+  pyright:
+    name: Pyright
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6.0.0
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@v3.5.0
+      - uses: actions/cache@v4.3.0
+        with:
+          path: ${{ env.UV_CACHE_DIR }}
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+            uv-${{ runner.os }}
+
+      - run: uv sync --locked --all-extras --dev
+      - run: uv run pyright
+      - run: uv cache prune --ci
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6.0.0
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@v3.5.0
+      - uses: actions/cache@v4.3.0
+        with:
+          path: ${{ env.UV_CACHE_DIR }}
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            uv-${{ runner.os }}-${{ hashFiles('uv.lock') }}
+            uv-${{ runner.os }}
+
+      - run: uv sync --locked --all-extras --dev
+      - run: uv run pytest src/ -v
+      - run: uv cache prune --ci

@@ -1,0 +1,50 @@
+version: "3"
+
+tasks:
+  default:
+    cmds:
+      - task -l --sort none
+    silent: true
+
+  test:
+    desc: "Run tests"
+    cmds:
+      - |
+        echo "=== Running tests ==="
+        # - uv run pytest
+        echo "No tests defined yet"
+    silent: true
+
+  lint-format:
+    desc: "Run linter and formatter"
+    cmds:
+      - |
+        echo "=== Running linter and formatter ==="
+        uv run ruff check --fix
+    silent: true
+
+  typecheck:
+    desc: "Run type checker"
+    cmds:
+      - |
+        echo "=== Running type checker ==="
+        uv run pyright .
+    silent: true
+
+  sort-imports:
+    desc: "Sort imports"
+    cmds:
+      - |
+        echo "=== Sorting imports ==="
+        uv run isort .
+    silent: true
+
+  pre-commit:
+    desc: "Run all pre-commit checks"
+    cmds:
+      - task: lint-format
+      - task: typecheck
+      - task: sort-imports
+      - task: test
+      - echo "=== All pre-commit checks passed ==="
+    silent: true
