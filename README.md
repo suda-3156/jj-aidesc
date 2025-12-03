@@ -75,7 +75,7 @@ jj log --no-graph -T '...' -r 'mutable() & description(exact:"") & ~empty()'
 ## Installation
 
 ```bash
-pip install git+https://github.com/suda3156/jj-aidesc.git
+pip install git+https://github.com/suda-3156/jj-aidesc.git
 ```
 
 ## Configuration
