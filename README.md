@@ -14,7 +14,7 @@ AI-powered commit description generator for [jj (Jujutsu)](https://github.com/jj
 
 ### How It Works
 
-```
+```plain
 ┌─────────────────────────────────────────────────────────────────────┐
 │                           jj-aidesc                                 │
 └─────────────────────────────────────────────────────────────────────┘
@@ -133,7 +133,7 @@ jj-aidesc
 
 ### Example Output
 
-```
+```sh
 $ jj-aidesc
 
 Scanning for commits without description...
@@ -189,7 +189,7 @@ Done! 2 commits updated.
 
 #### Conventional Commits Example
 
-```
+```plain
 feat(auth): add OAuth2 login support
 
 - Implement Google OAuth2 provider
