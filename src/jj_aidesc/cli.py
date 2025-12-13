@@ -350,6 +350,14 @@ def _prompt_action() -> str:
         console.print(key)
 
         action = key.lower()
+        if action == "c":
+            console.print(f"[yellow]Input c: Commit is treated as 'yes'[/yellow]")
+            action = "y"
+
+        if action == "a":
+            console.print(f"[yellow]Input a: Apply is treated as 'yes'[/yellow]")
+            action = "y"
+
         if action in ["y", "n", "e", "r", "q"]:
             return action
         else:
