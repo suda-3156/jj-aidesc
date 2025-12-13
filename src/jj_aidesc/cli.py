@@ -32,7 +32,7 @@ console = Console(highlight=False)
     "--model",
     "-m",
     type=str,
-    help="Model name (default: gemini-2.0-flash)",
+    help="Model name (default: gemini-2.5-flash)",
 )
 @click.option(
     "--temperature",

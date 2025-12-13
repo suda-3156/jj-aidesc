@@ -176,7 +176,7 @@ Done! 2 commits updated.
 | `--style`     | `-s`  | Description style              | `conventional`     |
 | `--apply`     | `-a`  | Apply all without confirmation | `false`            |
 | `--dry-run`   | `-n`  | Generate only, don't apply     | `false`            |
-| `--model`     |       | Gemini model to use            | `gemini-2.0-flash` |
+| `--model`     |       | Gemini model to use            | `gemini-2.5-flash` |
 | `--language`  | `-l`  | Output language                | `en`               |
 
 ### Styles (`--style`)
@@ -298,7 +298,7 @@ google-genai:
   # api_key: "your-api-key"
 
   # Model to use
-  model: "gemini-2.0-flash"
+  model: "gemini-2.5-flash"
 
   # Temperature (0.0 - 1.0)
   temperature: 0.0

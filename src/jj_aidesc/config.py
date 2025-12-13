@@ -5,7 +5,7 @@ import subprocess
 from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import yaml
 from dotenv import dotenv_values
@@ -25,7 +25,7 @@ google-genai:
   # api_key: "your-api-key-here"
 
   # Model to use for generation
-  model: "gemini-2.0-flash"
+  model: "gemini-2.5-flash"
 
   # Temperature for generation (0.0 - 1.0)
   temperature: 0.0
@@ -123,8 +123,8 @@ class Config:
         return os.getenv(API_KEY_ENV_VAR, "")
 
     @property
-    def model(self) -> str:
-        return self._model or self._from_config("model") or "gemini-2.0-flash"
+    def model(self) -> Optional[str]:
+        return self._model or self._from_config("model")
 
     @property
     def temperature(self) -> float:

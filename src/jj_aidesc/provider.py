@@ -1,4 +1,4 @@
-from typing import Protocol
+from typing import Optional, Protocol
 
 from langchain_core.language_models import BaseChatModel
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -16,15 +16,15 @@ class GoogleGenAIProvider:
     def __init__(
         self,
         api_key: str,
-        model: str,
+        model: Optional[str],
         temperature: float,
     ):
         self.name: str = "google-genai"
-        self.model_name: str = model
+        self.model_name: str = model or "gemini-2.5-flash"
         self.temperature: float = temperature
         self._api_key: str = api_key
         self.chat_model: BaseChatModel = ChatGoogleGenerativeAI(
-            model=model,
+            model=self.model_name,
             google_api_key=api_key,
             temperature=temperature,
         )
