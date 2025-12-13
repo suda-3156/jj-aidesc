@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://github.com/suda-3156/jj-aidesc/compare/v0.1.0...v0.2.0) (2025-12-13)
+
+
+### Features
+
+* **cli:** Add --revise option to include described commits ([285437b](https://github.com/suda-3156/jj-aidesc/commit/285437b9ea1a63dc1d1db7bff8377257e5422599))
+* **cli:** Treat "c" and "a" as "y" for commit/apply actions ([66ce567](https://github.com/suda-3156/jj-aidesc/commit/66ce567e25496368281b60783877e881b7512bb0))
+
+
+### Bug Fixes
+
+* **model:** Update default Gemini model to gemini-2.5-flash ([e544556](https://github.com/suda-3156/jj-aidesc/commit/e544556c97f7fedaa11359e2900b4aa77ed0c429))
+* **readme:** correct the repository URL in the installation guide ([b007d9d](https://github.com/suda-3156/jj-aidesc/commit/b007d9dbd48e9ce577a0d245017e2862930f938e))
+
 ## 0.1.0 (2025-12-03)
 
 
