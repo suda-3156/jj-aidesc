@@ -16,12 +16,12 @@ ENV_FILES = [".env", ".env.local"]
 CONFIG_FILES = [".jj-aidesc.yaml", ".jj-aidesc.yml"]
 API_KEY_ENV_VAR = "GOOGLE_GENAI_API_KEY"
 
-CONFIG_TEMPLATE = """\
+CONFIG_TEMPLATE = f"""\
 # jj-aidesc configuration file
 # See https://github.com/suda-3156/jj-aidesc for more information
 
 google-genai:
-  # Google GenAI API key (can also be set via GOOGLE_GENAI_API_KEY env var)
+  # Google GenAI API key (can also be set via {API_KEY_ENV_VAR} env var)
   # api_key: "your-api-key-here"
 
   # Model to use for generation
