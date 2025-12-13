@@ -15,9 +15,9 @@ class Editor:
     def edit(self, initial_message: str = "") -> str:
         with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
             f.write(initial_message)
-            f.write("\n\njj Edit the commit description above.")
-            f.write("\njj Lines starting with 'jj' will be ignored.")
-            f.write("\njj Leave empty or type 'abort' to cancel.")
+            f.write("\n\njj: Edit the commit description above.")
+            f.write("\njj: Lines starting with 'jj:' will be ignored.")
+            f.write("\njj: Leave empty or type 'abort' to cancel.")
             temp_path = Path(f.name)
 
         try:
@@ -39,7 +39,7 @@ class Editor:
     def _clean_message(self, content: str) -> str:
         lines = []
         for line in content.split("\n"):
-            if not line.strip().startswith("jj"):
+            if not line.strip().startswith("jj:"):
                 lines.append(line)
         return "\n".join(lines).strip()
 
