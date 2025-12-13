@@ -170,14 +170,15 @@ Done! 2 commits updated.
 
 ### Options
 
-| Option        | Short | Description                    | Default            |
-| ------------- | ----- | ------------------------------ | ------------------ |
-| `--revisions` | `-r`  | Target revset                  | `mutable()`        |
-| `--style`     | `-s`  | Description style              | `conventional`     |
-| `--apply`     | `-a`  | Apply all without confirmation | `false`            |
-| `--dry-run`   | `-n`  | Generate only, don't apply     | `false`            |
-| `--model`     |       | Gemini model to use            | `gemini-2.5-flash` |
-| `--language`  | `-l`  | Output language                | `en`               |
+| Option                            | Short | Description                                                  | Default            |
+| --------------------------------- | ----- | ------------------------------------------------------------ | ------------------ |
+| `--revisions`                     | `-r`  | Target revset                                                | `mutable()`        |
+| `--revise`, `--include-described` |       | Include revisions for targets that already have descriptions | `false`            |
+| `--style`                         | `-s`  | Description style                                            | `conventional`     |
+| `--apply`                         | `-a`  | Apply all without confirmation                               | `false`            |
+| `--dry-run`                       | `-n`  | Generate only, don't apply                                   | `false`            |
+| `--model`                         |       | Gemini model to use                                          | `gemini-2.5-flash` |
+| `--language`                      | `-l`  | Output language                                              | `en`               |
 
 ### Styles (`--style`)
 

@@ -34,7 +34,7 @@ class JJClient:
         return result.stdout
 
     def get_commits_without_description(
-        self, revset: str = "mutable()"
+        self, revset: str = "mutable()", include_described: bool = False
     ) -> list[Commit]:
         """Get commits without description that have changes."""
         # Template: change_id<TAB>commit_id<TAB>empty_status<TAB>files
@@ -45,13 +45,17 @@ class JJClient:
             'self.diff().files().map(|f| f.path()).join(",") ++ "\\n"'
         )
 
+        rev_operator = f"({revset}) & ~empty()"
+        if not include_described:
+            rev_operator += ' & description(exact:"")'
+
         output = self._run(
             "log",
             "--no-graph",
             "-T",
             template,
             "-r",
-            f'({revset}) & description(exact:"") & ~empty()',
+            rev_operator,
         )
 
         commits = []

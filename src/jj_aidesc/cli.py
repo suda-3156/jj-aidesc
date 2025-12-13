@@ -82,6 +82,14 @@ console = Console(highlight=False)
     default="mutable()",
     help="Target revset (default: mutable())",
 )
+@click.option(
+    "--revise",
+    "--include-described",
+    "include_described",
+    is_flag=True,
+    default=False,
+    help="Include revisions for targets that already have descriptions",
+)
 @error_handle
 def main(
     ctx: click.Context,
@@ -95,6 +103,7 @@ def main(
     apply: bool,
     dry_run: bool,
     revisions: str,
+    include_described: bool,
 ) -> None:
     """Generate AI-powered descriptions for jj commits without description."""
     if ctx.invoked_subcommand is not None:
@@ -147,14 +156,14 @@ def main(
 
     # Find commits without description
     with Spinner(text="Scanning for commits without description...") as spinner:
-        commits = jj.get_commits_without_description(revisions)
+        commits = jj.get_commits_without_description(revisions, include_described)
         if not commits:
             spinner.succeed("No commits without description found")
             return
         spinner.succeed(f"Found {len(commits)} commit(s)")
 
     console.print()
-    for i, commit in enumerate(commits, 1):
+    for i, commit in enumerate(reversed(commits), 1):  # Oldest first
         files_display = ", ".join(commit.files[:3])
         if len(commit.files) > 3:
             files_display += f" (+{len(commit.files) - 3} more)"
@@ -165,7 +174,7 @@ def main(
     # Generate descriptions
     applied_count = 0
     quit_requested = False
-    for i, commit in enumerate(commits, 1):
+    for i, commit in enumerate(reversed(commits), 1):  # Oldest first
         if quit_requested:
             break
 
