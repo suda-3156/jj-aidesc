@@ -1,3 +1,2 @@
 [tools]
 "pipx:uv" = "0.9.13"
-python = "3.13.9"
